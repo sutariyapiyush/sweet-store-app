@@ -5,68 +5,106 @@
                 {{ __('Raw Materials') }}
             </h2>
             @if(Auth::user()->isAdmin())
-            <a href="{{ route('raw-materials.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Add New Raw Material
+            <a href="{{ route('raw-materials.create') }}" class="btn-primary">
+                <i class="fas fa-plus"></i>
+                <span>Add New Raw Material</span>
             </a>
             @endif
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="space-y-6">
+        <div class="w-full">
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="card">
+                <div class="p-6">
                     @if($rawMaterials->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th>Name</th>
+                                        <th>Unit</th>
+                                        <th>Stock</th>
+                                        <th>Seller</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody>
                                     @foreach($rawMaterials as $material)
                                         <tr class="{{ $material->isLowStock() ? 'bg-red-50' : '' }}">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {{ $material->name }}
+                                            <td class="font-medium text-gray-900">
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-box text-gray-400"></i>
+                                                    <span>{{ $material->name }}</span>
+                                                </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td class="text-gray-500">
                                                 {{ $material->unit }}
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $material->quantity_in_stock }}
+                                            <td class="text-gray-500">
+                                                <div class="flex items-center space-x-1">
+                                                    <span>{{ $material->quantity_in_stock }}</span>
+                                                    @if($material->isLowStock())
+                                                        <i class="fas fa-exclamation-triangle text-red-500 text-xs" title="Low Stock"></i>
+                                                    @endif
+                                                </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="text-gray-500">
+                                                @if($material->seller)
+                                                    <a href="{{ route('sellers.show', $material->seller) }}" class="text-blue-600 hover:text-blue-900 flex items-center space-x-1">
+                                                        <i class="fas fa-user text-xs"></i>
+                                                        <span>{{ $material->seller->name }}</span>
+                                                    </a>
+                                                @else
+                                                    <span class="text-gray-400 flex items-center space-x-1">
+                                                        <i class="fas fa-user-slash text-xs"></i>
+                                                        <span>No Seller</span>
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td>
                                                 @if($material->isLowStock())
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                    <span class="status-badge low-stock">
                                                         Low Stock
                                                     </span>
                                                 @else
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    <span class="status-badge in-stock">
                                                         In Stock
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <a href="{{ route('raw-materials.show', $material) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">View</a>
-                                                @if(Auth::user()->isAdmin())
-                                                    <a href="{{ route('raw-materials.edit', $material) }}" class="text-yellow-600 hover:text-yellow-900 mr-3">Edit</a>
-                                                    <form action="{{ route('raw-materials.destroy', $material) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this raw material?')">Delete</button>
-                                                    </form>
-                                                @endif
+                                            <td class="text-center">
+                                                <div class="flex items-center justify-center space-x-2">
+                                                    <a href="{{ route('raw-materials.show', $material) }}"
+                                                       class="action-icon-btn view"
+                                                       title="View">
+                                                        <i class="fas fa-eye text-sm"></i>
+                                                    </a>
+                                                    @if(Auth::user()->isAdmin())
+                                                        <a href="{{ route('raw-materials.edit', $material) }}"
+                                                           class="action-icon-btn edit"
+                                                           title="Edit">
+                                                            <i class="fas fa-edit text-sm"></i>
+                                                        </a>
+                                                        <form action="{{ route('raw-materials.destroy', $material) }}" method="POST" class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                    class="action-icon-btn delete"
+                                                                    onclick="return confirm('Are you sure you want to delete this raw material?')"
+                                                                    title="Delete">
+                                                                <i class="fas fa-trash text-sm"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -74,11 +112,15 @@
                             </table>
                         </div>
                     @else
-                        <div class="text-center py-8">
-                            <p class="text-gray-500 text-lg">No raw materials found.</p>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-boxes text-2xl text-gray-400"></i>
+                            </div>
+                            <p class="text-gray-500 text-lg mb-4">No raw materials found.</p>
                             @if(Auth::user()->isAdmin())
-                                <a href="{{ route('raw-materials.create') }}" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Add First Raw Material
+                                <a href="{{ route('raw-materials.create') }}" class="btn-primary">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add First Raw Material</span>
                                 </a>
                             @endif
                         </div>

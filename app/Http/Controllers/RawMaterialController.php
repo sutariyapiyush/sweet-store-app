@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\RawMaterial;
+use App\Models\Seller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RawMaterialController extends Controller
 {
@@ -17,7 +19,7 @@ class RawMaterialController extends Controller
      */
     public function index()
     {
-        $rawMaterials = RawMaterial::orderBy('name')->get();
+        $rawMaterials = RawMaterial::with('seller')->orderBy('name')->get();
         return view('raw-materials.index', compact('rawMaterials'));
     }
 
@@ -31,7 +33,8 @@ class RawMaterialController extends Controller
             abort(403, 'Only admins can create raw materials.');
         }
 
-        return view('raw-materials.create');
+        $sellers = Seller::active()->orderBy('name')->get();
+        return view('raw-materials.create', compact('sellers'));
     }
 
     /**
@@ -48,9 +51,21 @@ class RawMaterialController extends Controller
             'name' => 'required|string|max:255|unique:raw_materials',
             'unit' => 'required|string|max:50',
             'quantity_in_stock' => 'required|numeric|min:0',
+            'seller_id' => 'nullable|exists:sellers,id',
+            'purchase_date' => 'nullable|date',
+            'purchase_price' => 'nullable|numeric|min:0',
+            'invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        RawMaterial::create($request->all());
+        $data = $request->except('invoice');
+
+        // Handle invoice upload
+        if ($request->hasFile('invoice')) {
+            $invoicePath = $request->file('invoice')->store('invoices', 'public');
+            $data['invoice_path'] = $invoicePath;
+        }
+
+        RawMaterial::create($data);
 
         return redirect()->route('raw-materials.index')
                         ->with('success', 'Raw material created successfully.');
@@ -61,6 +76,7 @@ class RawMaterialController extends Controller
      */
     public function show(RawMaterial $rawMaterial)
     {
+        $rawMaterial->load('seller');
         return view('raw-materials.show', compact('rawMaterial'));
     }
 
@@ -74,7 +90,8 @@ class RawMaterialController extends Controller
             abort(403, 'Only admins can edit raw materials.');
         }
 
-        return view('raw-materials.edit', compact('rawMaterial'));
+        $sellers = Seller::active()->orderBy('name')->get();
+        return view('raw-materials.edit', compact('rawMaterial', 'sellers'));
     }
 
     /**
@@ -91,9 +108,26 @@ class RawMaterialController extends Controller
             'name' => 'required|string|max:255|unique:raw_materials,name,' . $rawMaterial->id,
             'unit' => 'required|string|max:50',
             'quantity_in_stock' => 'required|numeric|min:0',
+            'seller_id' => 'nullable|exists:sellers,id',
+            'purchase_date' => 'nullable|date',
+            'purchase_price' => 'nullable|numeric|min:0',
+            'invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
-        $rawMaterial->update($request->all());
+        $data = $request->except('invoice');
+
+        // Handle invoice upload
+        if ($request->hasFile('invoice')) {
+            // Delete old invoice if exists
+            if ($rawMaterial->invoice_path) {
+                Storage::disk('public')->delete($rawMaterial->invoice_path);
+            }
+
+            $invoicePath = $request->file('invoice')->store('invoices', 'public');
+            $data['invoice_path'] = $invoicePath;
+        }
+
+        $rawMaterial->update($data);
 
         return redirect()->route('raw-materials.index')
                         ->with('success', 'Raw material updated successfully.');
@@ -107,6 +141,11 @@ class RawMaterialController extends Controller
         // Only admin can delete
         if (!auth()->user()->isAdmin()) {
             abort(403, 'Only admins can delete raw materials.');
+        }
+
+        // Delete invoice file if exists
+        if ($rawMaterial->invoice_path) {
+            Storage::disk('public')->delete($rawMaterial->invoice_path);
         }
 
         $rawMaterial->delete();

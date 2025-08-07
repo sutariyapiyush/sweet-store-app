@@ -18,11 +18,23 @@
                     <x-nav-link :href="route('raw-materials.index')" :active="request()->routeIs('raw-materials.*')">
                         {{ __('Raw Materials') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('sellers.index')" :active="request()->routeIs('sellers.*')">
+                        {{ __('Sellers') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('product-categories.index')" :active="request()->routeIs('product-categories.*')">
+                        {{ __('Categories') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                         {{ __('Products') }}
                     </x-nav-link>
                     <x-nav-link :href="route('production-logs.index')" :active="request()->routeIs('production-logs.*')">
                         {{ __('Production') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('production-schedules.index')" :active="request()->routeIs('production-schedules.*')">
+                        {{ __('Schedules') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('quality-checks.index')" :active="request()->routeIs('quality-checks.*')">
+                        {{ __('Quality') }}
                     </x-nav-link>
                     @if(Auth::user()->isAdmin())
                         <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
@@ -87,11 +99,23 @@
             <x-responsive-nav-link :href="route('raw-materials.index')" :active="request()->routeIs('raw-materials.*')">
                 {{ __('Raw Materials') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('sellers.index')" :active="request()->routeIs('sellers.*')">
+                {{ __('Sellers') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('product-categories.index')" :active="request()->routeIs('product-categories.*')">
+                {{ __('Categories') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                 {{ __('Products') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('production-logs.index')" :active="request()->routeIs('production-logs.*')">
                 {{ __('Production') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('production-schedules.index')" :active="request()->routeIs('production-schedules.*')">
+                {{ __('Schedules') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('quality-checks.index')" :active="request()->routeIs('quality-checks.*')">
+                {{ __('Quality') }}
             </x-responsive-nav-link>
             @if(Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">

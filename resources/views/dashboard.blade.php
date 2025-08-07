@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Sweet Store - Inventory Dashboard') }}
+                {{ __('SweetVedas - Inventory Dashboard') }}
             </h2>
             <div class="text-sm text-gray-600">
                 Welcome, {{ Auth::user()->name }} ({{ ucfirst(Auth::user()->role) }})
@@ -10,34 +10,38 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="space-y-6">
 
             <!-- Search and Filter -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4">
-                        <div class="flex-1 min-w-64">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6">
+                <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4">
+                    <div class="flex-1 min-w-64">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                             <input type="text" name="search" value="{{ $search }}"
                                    placeholder="Search materials or products..."
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full pl-10 pr-4 py-2 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
-                        <div>
-                            <select name="type" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="all" {{ $type === 'all' ? 'selected' : '' }}>All Items</option>
-                                <option value="raw_materials" {{ $type === 'raw_materials' ? 'selected' : '' }}>Raw Materials</option>
-                                <option value="products" {{ $type === 'products' ? 'selected' : '' }}>Products</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                            Filter
-                        </button>
-                        <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">
-                            Clear
-                        </a>
-                    </form>
-                </div>
+                    </div>
+                    <div>
+                        <select name="type" class="rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="all" {{ $type === 'all' ? 'selected' : '' }}>All Items</option>
+                            <option value="raw_materials" {{ $type === 'raw_materials' ? 'selected' : '' }}>Raw Materials</option>
+                            <option value="products" {{ $type === 'products' ? 'selected' : '' }}>Products</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 transition-colors">
+                        <i class="fas fa-filter"></i>
+                        <span>Filter</span>
+                    </button>
+                    <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 flex items-center space-x-2 transition-colors">
+                        <i class="fas fa-times"></i>
+                        <span>Clear</span>
+                    </a>
+                </form>
             </div>
+        </div>
 
             <!-- Low Stock Alerts -->
             @if($lowStockRawMaterials->count() > 0 || $lowStockProducts->count() > 0)
@@ -80,8 +84,9 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-gray-900">Raw Materials</h3>
                             @if(Auth::user()->isAdmin())
-                            <a href="{{ route('raw-materials.create') }}" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                Add New
+                            <a href="{{ route('raw-materials.create') }}" class="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 flex items-center space-x-2 transition-colors">
+                                <i class="fas fa-plus"></i>
+                                <span>Add New</span>
                             </a>
                             @endif
                         </div>
@@ -118,8 +123,9 @@
                         <p class="text-gray-500 text-center py-4">No raw materials found.</p>
                         @endif
                         <div class="mt-4">
-                            <a href="{{ route('raw-materials.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                View All Raw Materials →
+                            <a href="{{ route('raw-materials.index') }}" class="text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1">
+                                <span>View All Raw Materials</span>
+                                <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -133,8 +139,9 @@
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-semibold text-gray-900">Products</h3>
                             @if(Auth::user()->isAdmin())
-                            <a href="{{ route('products.create') }}" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                Add New
+                            <a href="{{ route('products.create') }}" class="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 flex items-center space-x-2 transition-colors">
+                                <i class="fas fa-plus"></i>
+                                <span>Add New</span>
                             </a>
                             @endif
                         </div>
@@ -171,8 +178,9 @@
                         <p class="text-gray-500 text-center py-4">No products found.</p>
                         @endif
                         <div class="mt-4">
-                            <a href="{{ route('products.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                View All Products →
+                            <a href="{{ route('products.index') }}" class="text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1">
+                                <span>View All Products</span>
+                                <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -206,8 +214,9 @@
                         </table>
                     </div>
                     <div class="mt-4">
-                        <a href="{{ route('production-logs.index') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                            View All Production Logs →
+                        <a href="{{ route('production-logs.index') }}" class="text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1">
+                            <span>View All Production Logs</span>
+                            <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
